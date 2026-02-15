@@ -264,6 +264,9 @@ def eda_column_summary(df, column):
     print("\nNULL VALUES:")
     print(f"{col.isnull().sum():,}")
 
+    print("\nUNIQUE VALUES:")
+    print(f"{col.nunique():,}")
+
     print("\nBASIC STATS:")
     print(col.describe())
 
