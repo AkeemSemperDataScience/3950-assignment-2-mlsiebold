@@ -1,0 +1,19 @@
+﻿Column	Dtype	Semantic Type	Desc	# of Nulls	# of Unique Values
+Timestamp	object	categorical nominal	Date and time survey response was submitted (acts as survey submission identifier)	0	1248
+Age	float64	numeric discrete	Respondent's age in years	27	40
+Gender	object	categorical nominal	Respondent's self-report gender	10	3
+City	object	categorical nominal	City in which the respondent works (primarily German cities, with a few internationaly cities)	0	107
+Position	object	categorical nominal	Current job title or primary role	6	141
+Total years of experience	object	numeric continuous	Total number of years the respondent has worked in their profession	16	48
+Years of experience in Germany	object	numeric continuous	Number of years the respondent has worked specifically in Germany	32	52
+Seniority level	object	categorical ordinal	Self‑reported seniority	12	23
+Your main technology / programming language	object	categorical nominal	Primary programming language or technology used in the respondent’s job	127	243
+Other technologies/programming languages you use often	object	categorical nominal	Additional languages, frameworks, or tools the respondent frequently uses	157	562
+Yearly brutto salary (without bonus and stocks) in EUR	float64	numeric continuous	Annual gross base salary in euros, excluding bonuses and stock compensation	0	201
+Yearly bonus + stocks in EUR	object	numeric continuous	Annual bonus and/or stock compensation in euros	424	168
+Number of vacation days	object	numeric discrete	Number of paid vacation days per year	68	43
+Employment status	object	categorical nominal	Type of employment	17	11
+Contract duration	object	categorical nominal	Type of employment contract	29	3
+Main language at work	object	categorical nominal	Primary language used in the workplace	16	14
+Company size	object	categorical ordinal	Approximate number of employees in the respondent’s company	18	5
+Company type	object	categorical nominal	Type of organization respondent is employed for	25	60
