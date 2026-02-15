@@ -13,9 +13,42 @@ plt.rcParams["figure.figsize"] = (8,8)
 #----------------------------------------------------------------------------------------------------
 # RELOAD MODULE
 #----------------------------------------------------------------------------------------------------
+
 def reload_module():
     pass
 
+
+#----------------------------------------------------------------------------------------------------
+# SET VARIABLES
+#----------------------------------------------------------------------------------------------------
+
+def groupby_unique(df, group_col, column):
+    if group_col not in df.columns:
+        raise ValueError(f"Group column '{group_col}' not found in DataFrame.")
+
+    if column not in df.columns:
+        raise ValueError(f"Value column '{column}' not found in DataFrame.")
+
+    return (
+        df
+        .groupby(group_col, observed=True)[column]
+        .unique()
+    )
+
+#----------------------------------------------------------------------------------------------------
+
+def detect_cat_cols(df):
+    return df.select_dtypes(
+        include=['object', 'category', 'string', 'bool']).columns.tolist()
+
+
+def detect_num_cols(df):
+    return df.select_dtypes(
+        include=['number']).columns.tolist()
+
+def detect_datetime_cols(df):
+    return df.select_dtypes(
+        include=['datetime64[ns]', 'datetimetz']).columns.tolist()
 
 #----------------------------------------------------------------------------------------------------
 # CLEANING
@@ -74,6 +107,20 @@ def clean_string_old(s):
 
     return s
 
+def clean_null_like(df, columns=None):
+    null_like = {"<NA>", "nan", "none", "null", "na", "n/a", "", "missing", "?"}
+
+    if columns is None:
+        columns = df.select_dtypes(include=["object", "string", "category"]).columns
+
+    for col in columns:
+        df[col] = (
+            df[col]
+            .astype("string")            # safe: preserves <NA>
+            .str.strip()
+            .str.lower()
+            .replace(null_like, pd.NA)
+        )
 #----------------------------------------------------------------------------------------------------
 
 def find_decimal_records(df, column, extra_cols=None, regex=r'\.\d+'):
@@ -194,3 +241,238 @@ def apply_semantic_dtypes(df, data_dict, semantic_to_dtype):
     df = apply_dtypes_from_mapping(df, col_to_dtype)
 
     return df
+
+
+#----------------------------------------------------------------------------------------------------
+# EDA
+#----------------------------------------------------------------------------------------------------
+
+def eda_column_summary(df, column):
+    """Perform EDA for a single column."""
+    from pandas.api.types import is_numeric_dtype
+
+    col = df[column]
+
+    print(f"=== COLUMN: {column} ===")
+
+    print("\nDTYPE:")
+    print(col.dtype)
+
+    print("\nNON-NULL VALUES:")
+    print(f"{col.notnull().sum():,}")
+
+    print("\nNULL VALUES:")
+    print(f"{col.isnull().sum():,}")
+
+    print("\nBASIC STATS:")
+    print(col.describe())
+
+    print("\nTOP VALUES:")
+    print(col.value_counts().head(5))
+
+    print("\nBOTTOM VALUES:")
+    print(col.value_counts().tail(5))
+
+def eda_dataset_summary(df):
+    """Perform dataset-level EDA."""
+    print("=== DATASET INFO ===")
+    df.info()
+
+    print("\n=== BASIC STATS ===")
+    df.describe()
+
+    print("\n=== NULL VALUES ===")
+    print(df.null_values())
+
+    print("\n=== DETECTED CATEGORICAL COLUMNS ===")
+    print(df.detect_cat_cols())
+
+    print("\n=== DETECTED NUMERIC COLUMNS ===")
+    print(df.detect_num_cols())
+
+    print("\n=== DATA TYPES ===")
+    print(df.dtypes())
+
+    print("\n=== TARGET ===")
+    print(df.giveTarget())
+
+
+#----------------------------------------------------------------------------------------------------
+# PLOTTING
+#----------------------------------------------------------------------------------------------------
+
+def plot(df, columns):
+    if isinstance(columns, str):
+        columns = [columns]
+
+    for col in columns:
+        if col in detect_num_cols(df):
+            plot_numeric(df, col)
+        elif col in detect_cat_cols(df):
+            plot_categorical(df, col)
+        elif col in detect_datetime_cols(df):
+            plot_datetime(df, col)
+        else:
+            print(f"Column '{col}' not recognized as numeric, categorical, or datetime.")
+
+def plot_numeric(df, column):
+    data = df[column].dropna()
+
+    fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+
+    sns.histplot(data, kde=True, ax=axes[0])
+    axes[0].set_title(f"Histogram of {column}")
+
+    sns.boxplot(x=data, ax=axes[1])
+    axes[1].set_title(f"Boxplot of {column}")
+
+    sns.probplot(data, dist='norm', plot=axes[2])
+    axes[2].set_title(f"Normal Q-Q Plot of {column}")
+
+    plt.tight_layout()
+    plt.show()            
+
+def plot_categorical(df, column):
+    data = df[column].dropna()
+
+    fig, axes = plt.subplots(1, 2, figsize=(15, 5))
+
+    sns.countplot(x=data, ax=axes[0])
+    axes[0].set_title(f"Countplot of {column}")
+
+    sns.boxplot(x=data, ax=axes[1])
+    axes[1].set_title(f"Boxplot of {column}")
+
+    axes[0].tick_params(axis='x', labelsize=6, rotation=90)
+    axes[1].tick_params(axis='x', labelsize=6, rotation=90)
+
+    plt.tight_layout()
+    plt.show()    
+
+def plot_datetime(df, column):
+    data = df[column].dropna()
+
+    fig, axes = plt.subplots(1, 2, figsize=(15, 5))
+
+    sns.lineplot(x=data, ax=axes[0])
+    axes[0].set_title(f"Time Series of {column}")
+
+    sns.boxplot(x=data, ax=axes[1])
+    axes[1].set_title(f"Boxplot of {column}")
+
+    axes[0].tick_params(axis='x', labelsize=6, rotation=90)
+    axes[1].tick_params(axis='x', labelsize=6, rotation=90)
+
+    plt.tight_layout()
+    plt.show()
+
+def plot_group_kde(df, groupby_col, columns):
+    """
+    Plot KDE curves for one or multiple numeric columns,
+    grouped by the unique values in `group_col`.
+    """
+
+    # Allow a single column string
+    if isinstance(columns, str):
+        columns = [columns]
+
+    # Validate group column
+    if groupby_col not in df.columns:
+        raise ValueError(f"Group column '{groupby_col}' not found in DataFrame.")
+
+    # Get unique groups using your helper
+    groups = df.set_unique_list(groupby_col)
+
+    for col in columns:
+
+        if col not in df.columns:
+            raise ValueError(f"Column '{col}' not found in DataFrame.")
+
+        if col not in df.detect_num_cols():
+            raise TypeError(f"Column '{col}' must be numeric for KDE plotting.")
+
+        plt.figure(figsize=(10, 5))
+
+        # Plot KDE for each group
+        for g in groups:
+            subset = df[df[groupby_col] == g][col].dropna()
+            if len(subset) > 1:  # KDE needs >1 data point
+                sns.countplot(subset, label=str(g), fill=False)
+
+        plt.title(f'Density by {groupby_col} for {col}')
+        plt.xlabel(col)
+        plt.ylabel('Density')
+        plt.legend(title=groupby_col)
+
+        plt.tight_layout()
+        plt.show()
+
+#----------------------------------------------------------------------------------------------------
+
+def plot_group(df, groupby_col, columns):
+    """
+    Dispatch grouped plotting based on column type.
+    """
+
+    if isinstance(columns, str):
+        columns = [columns]
+
+    if groupby_col not in df.data.columns:
+        raise ValueError(f"Group column '{groupby_col}' not found in DataFrame.")
+
+    for col in columns:
+
+        if col in df.detect_num_cols():
+            df.plot_group_numeric(groupby_col, col)
+
+        elif col in df.detect_cat_cols():
+            df.plot_group_categorical(groupby_col, col)
+
+        else:
+            print(f"Column '{col}' not recognized as numeric or categorical.")
+
+    # Grouped KDE for Numeric Columns
+
+def plot_group_numeric(df, groupby_col, column):
+    """
+    Plot KDE curves for a numeric column grouped by group_col.
+    """
+
+    groups = df.set_unique_list(groupby_col)
+
+    plt.figure(figsize=(10, 5))
+
+    for g in groups:
+        subset = df.data[df.data[groupby_col] == g][column].dropna()
+        if len(subset) > 1:
+            sns.kdeplot(subset, label=str(g), fill=False)
+
+    plt.title(f"KDE by {groupby_col} for {column}")
+    plt.xlabel(column)
+    plt.ylabel("Density")
+    plt.legend(title=groupby_col)
+
+    plt.tight_layout()
+    plt.show()
+
+def plot_group_categorical(df, groupby_col, column):
+    """
+    Plot a grouped countplot for a categorical column.
+    """
+
+    plt.figure(figsize=(10, 5))
+
+    sns.countplot(
+        data=df.data,
+        x=column,
+        hue=groupby_col
+    )
+
+    plt.title(f"Countplot of {column} grouped by {groupby_col}")
+    plt.xlabel(column)
+    plt.ylabel("Count")
+    plt.xticks(rotation=90)
+
+    plt.tight_layout()
+    plt.show()
+
