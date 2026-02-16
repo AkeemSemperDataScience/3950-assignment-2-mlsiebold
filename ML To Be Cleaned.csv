@@ -10,7 +10,7 @@
  'Your main technology / programming language',,,,,,,,,,,,,,,,,
  'Other technologies/programming languages you use often',,,,,,,,,,,,,,,,,
  'Yearly brutto salary (without bonus and stocks) in EUR',,,,,,,,,,,,,,,,,
- 'Yearly bonus + stocks in EUR',,,,,,,,,,,,,,,,,
+ 'Yearly bonus + stocks in EUR',y,n,,y,n,n,,y,,,,,,,,,
  'Number of vacation days',y,n,y,y,n,n,,y,,y,,y,,y,log,,
  'Employment status',n,y,n,n,n,n,,n,,n,,n,,n,,,
  'Contract duration',n,n,y,n,n,y,,y,,n,,n,,n,,,
