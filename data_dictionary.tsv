@@ -1,19 +1,19 @@
 ﻿Column	Dtype	Semantic Type	Desc	# of Nulls	# of Unique Values
-Timestamp	string	categorical nominal	Date and time survey response was submitted (acts as survey submission identifier)	0	1248
-Age	float64	numeric discrete	Respondent's age in years	27	40
-Gender	string	categorical nominal	Respondent's self-report gender	10	3
-City	string	categorical nominal	City in which the respondent works (primarily German cities, with a few internationaly cities)	0	106
-Position	string	categorical nominal	Current job title or primary role	6	133
-Total years of experience	string	numeric continuous	Total number of years the respondent has worked in their profession	16	48
-Years of experience in Germany	string	numeric continuous	Number of years the respondent has worked specifically in Germany	32	52
-Seniority level	string	categorical ordinal	Self‑reported seniority	12	21
-Your main technology / programming language	string	categorical nominal	Primary programming language or technology used in the respondent’s job	128	206
-Other technologies/programming languages you use often	string	categorical nominal	Additional languages, frameworks, or tools the respondent frequently uses	157	561
-Yearly brutto salary (without bonus and stocks) in EUR	float64	numeric continuous	Annual gross base salary in euros, excluding bonuses and stock compensation	0	201
-Yearly bonus + stocks in EUR	string	numeric continuous	Annual bonus and/or stock compensation in euros	425	167
-Number of vacation days	string	numeric discrete	Number of paid vacation days per year	68	42
-Employment status	string	categorical nominal	Type of employment	17	10
-Contract duration	string	categorical nominal	Type of employment contract	29	3
-Main language at work	string	categorical nominal	Primary language used in the workplace	16	14
-Company size	string	categorical ordinal	Approximate number of employees in the respondent’s company	18	5
-Company type	string	categorical nominal	Type of organization respondent is employed for	25	57
+timestamp	string	categorical nominal	Date and time survey response was submitted (acts as survey submission identifier)	0	1248
+age	float64	numeric discrete	Respondent's age in years	27	40
+gender	string	categorical nominal	Respondent's self-report gender	10	3
+city	string	categorical nominal	City in which the respondent works (primarily German cities, with a few internationaly cities)	0	106
+position	string	categorical nominal	Current job title or primary role	6	133
+total years of experience	string	numeric continuous	Total number of years the respondent has worked in their profession	16	48
+years of experience in germany	string	numeric continuous	Number of years the respondent has worked specifically in Germany	32	52
+seniority level	string	categorical ordinal	Self‑reported seniority	12	21
+your main technology / programming language	string	categorical nominal	Primary programming language or technology used in the respondent’s job	128	206
+other technologies/programming languages you use often	string	categorical nominal	Additional languages, frameworks, or tools the respondent frequently uses	157	561
+yearly brutto salary (without bonus and stocks) in eur	float64	numeric continuous	Annual gross base salary in euros, excluding bonuses and stock compensation	0	201
+yearly bonus + stocks in eur	string	numeric continuous	Annual bonus and/or stock compensation in euros	425	167
+number of vacation days	string	numeric discrete	Number of paid vacation days per year	68	42
+employment status	string	categorical nominal	Type of employment	17	10
+contract duration	string	categorical nominal	Type of employment contract	29	3
+main language at work	string	categorical nominal	Primary language used in the workplace	16	14
+company size	string	categorical ordinal	Approximate number of employees in the respondent’s company	18	5
+company type	string	categorical nominal	Type of organization respondent is employed for	25	57

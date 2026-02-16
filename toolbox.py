@@ -63,6 +63,30 @@ CYRILLIC_TO_LATIN = {
 }
 
 def clean_string(s):
+    """
+    Normalize and sanitize a string by removing accents, replacing visually similar
+    Cyrillic characters with Latin equivalents, fixing unusual whitespace/dash
+    characters, and trimming surrounding spaces.
+
+    This function performs the following steps:
+    - Normalizes Unicode characters using NFKD form.
+    - Replaces Cyrillic lookalike characters based on the CYRILLIC_TO_LATIN mapping.
+    - Removes diacritics by encoding to ASCII and ignoring non‑ASCII characters.
+    - Replaces non‑standard spaces and dash characters with standard equivalents.
+    - Strips leading and trailing whitespace.
+    - Converts string to lowercase
+
+    Parameters
+    ----------
+    s : any
+        The value to clean. Only string inputs are modified; all other types are
+        returned unchanged.
+
+    Returns
+    -------
+    any
+        A cleaned string if `s` is a string, otherwise the original value.
+    """
 
     if isinstance(s, str):
 
@@ -81,6 +105,9 @@ def clean_string(s):
 
         # Strip whitespace
         s = s.strip()
+
+        # Convert to lowercase
+        s = s.lower()
 
     return s
 
